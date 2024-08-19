@@ -18,6 +18,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.HeavenLib.Managers.DependencyManager;
 
@@ -93,127 +95,123 @@ public class WerewolfManager
 	public void startFormChecker()
 	{
 		//Continuously give back the buffs in they were missing
-		tasks.add(new BukkitRunnable()
-        {
-            public void run() 
-            {
-        		for (Werewolf werewolf : getOnlineWerewolves())
-        		{	
-        			if (werewolf.inWolfForm())
-        			{
-        				/*
-        				 * Terminate Transformation
-        				 */
-        				//Remove their form if they're in a no werewolf world
-        				if (config.getStringList("no-werewolf-worlds").contains(werewolf.getPlayer().getWorld().getName()))
-        				{
-        					werewolf.untransform();
-        					continue;
-        				}
-        				
-        				//Untransform when their time expires.
-        				if (config.getBoolean("transformation.limit"))
-        				{
-        					int level = werewolf.getLevel();
-        					long lastTransform = werewolf.getLastTransform();
-        					long now = System.currentTimeMillis();
-        					
-        					double secondsPassed = (double)(now - lastTransform) / 1000;
-        					double base = config.getDouble("transformation.base");
-        					double modifier = config.getDouble("transformation.modifier");
-        					
-        					double expiration;
-        					
-        					if (config.getString("transformation.equation").toUpperCase().equals("LINEAR"))
-        					{
-        						expiration = (modifier * level) + base;
-        					}
-        					else if (config.getString("transformation.equation").toUpperCase().equals("EXPONENTIAL"))
-        					{
-        						expiration = (Math.pow(level, modifier)) + base;
-        					}
-        					else //FLAT EQUATION
-        					{
-        						expiration = base;
-        					}
-        					
-        					//Untransform when time is up
-        					if (secondsPassed >= expiration && !WerewolfPlugin.getMoonManager().isFullMoon(werewolf.getPlayer().getWorld()))
-        					{
-        						if (werewolf.untransform())
-        							messages.sendWolfLocale(werewolf.getPlayer(), "transform.from-form");
-        						
-        						continue;
-        					}
-        				}
-        				
-        				/*
-        				 * Keep Transformation Up
-        				 */
-        				Clan clan = WerewolfPlugin.getClanManager().getClan(werewolf);
-        				long clanSpeed = config.getLong("werewolf-stats." + werewolf.getType().toKey() + ".speed");
-        				
-    					//Return their speed to their normal forms
-    					if (werewolf.getPlayer().getWalkSpeed() < clanSpeed)
-    						werewolf.getPlayer().setWalkSpeed(clanSpeed);
-    					
-    					for (String effectName : config.getStringList("blocked-potions"))
-    					{
-    						PotionEffectType effect = PotionEffectType.getByName(effectName);
-    						if (effect != null)
-    							werewolf.getPlayer().removePotionEffect(effect);
-    					}
-    					
-        				for (PotionEffect buff : clan.getBuffs())
-        				{
-        					//Ensures the buffs remain permanent for the duration of the transformation
-							PotionEffect first = werewolf.getPlayer().getPotionEffect(buff.getType());
-							if (first == null || first.getAmplifier() <= buff.getAmplifier())
-							{
-								werewolf.getPlayer().addPotionEffect(buff);
-							}
-        				}
-        			}
-        		}
-            }
-        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-buffs")));
+		tasks.add(Bukkit.getScheduler().runTaskTimer(
+			WerewolfPlugin.getInstance(),
+			() -> {
+				for (Werewolf werewolf : getOnlineWerewolves())
+				{
+					Player player = werewolf.getPlayer();
+					if (player == null || !werewolf.inWolfForm())
+						continue;
+					/*
+					 * Terminate Transformation
+					 */
+					//Remove their form if they're in a no werewolf world
+					if (config.getStringList("no-werewolf-worlds").contains(player.getWorld().getName()))
+					{
+						werewolf.untransform();
+						continue;
+					}
+
+					//Untransform when their time expires.
+					if (config.getBoolean("transformation.limit"))
+					{
+						int level = werewolf.getLevel();
+						long lastTransform = werewolf.getLastTransform();
+						long now = System.currentTimeMillis();
+
+						double secondsPassed = (double)(now - lastTransform) / 1000;
+						double base = config.getDouble("transformation.base");
+						double modifier = config.getDouble("transformation.modifier");
+
+						double expiration;
+
+						if (config.getString("transformation.equation").equalsIgnoreCase("LINEAR"))
+						{
+							expiration = (modifier * level) + base;
+						}
+						else if (config.getString("transformation.equation").equalsIgnoreCase("EXPONENTIAL"))
+						{
+							expiration = (Math.pow(level, modifier)) + base;
+						}
+						else //FLAT EQUATION
+						{
+							expiration = base;
+						}
+
+						//Untransform when time is up
+						if (secondsPassed >= expiration && !WerewolfPlugin.getMoonManager().isFullMoon(player.getWorld()))
+						{
+							if (werewolf.untransform())
+								messages.sendWolfLocale(player, "transform.from-form");
+
+							continue;
+						}
+					}
+
+					/*
+					 * Keep Transformation Up
+					 */
+					Clan clan = WerewolfPlugin.getClanManager().getClan(werewolf);
+					long clanSpeed = config.getLong("werewolf-stats." + werewolf.getType().toKey() + ".speed");
+
+					//Return their speed to their normal forms
+					if (player.getWalkSpeed() < clanSpeed)
+						player.setWalkSpeed(clanSpeed);
+
+					for (String effectName : config.getStringList("blocked-potions"))
+					{
+						PotionEffectType effect = PotionEffectType.getByName(effectName);
+						if (effect != null)
+							player.removePotionEffect(effect);
+					}
+
+					for (PotionEffect buff : clan.getBuffs())
+					{
+						//Ensures the buffs remain permanent for the duration of the transformation
+						PotionEffect first = player.getPotionEffect(buff.getType());
+						if (first == null || first.getAmplifier() <= buff.getAmplifier())
+						{
+							player.addPotionEffect(buff);
+						}
+					}
+				}
+			}, 0L, config.getInt("intervals.werewolf-buffs")));
 	}
 	
 	public void startArmorChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		tasks.add(new BukkitRunnable()
-        {
-            public void run() 
-            {
-        		for (Werewolf werewolf : getOnlineWerewolves())
-        		{
-        			if (werewolf.inWolfForm())
-        			{
-        				werewolf.dropArmor();
-        			}
-        		}
-            }
-        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-drops")));
+		tasks.add(Bukkit.getScheduler().runTaskTimer(
+				WerewolfPlugin.getInstance(),
+				() -> {
+					for (Werewolf werewolf : getOnlineWerewolves())
+					{
+						if (werewolf.inWolfForm())
+						{
+							werewolf.dropArmor();
+						}
+					}
+				}, 0L, config.getInt("intervals.werewolf-drops")));
 	}
 	
 	public void startWeaponChecker()
 	{
 		//Continuously cause werewolves to get hurt if touching silver
-		tasks.add(new BukkitRunnable()
-        {
-			public void run() 
-            {
-        		for (Werewolf werewolf : getOnlineWerewolves())
-        		{
-        			Player player = werewolf.getPlayer();
-        			SilverSword silverSword = new SilverSword();
-        			
-        			if (silverSword.isHoldingItem(player, true) && silverSword.hasItem(player))
-        				player.damage(config.getInt("silver-penalty"));
-        		}
-            }
-        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-silver")));
+		tasks.add(Bukkit.getScheduler().runTaskTimer(
+				WerewolfPlugin.getInstance(),
+				() -> {
+					for (Werewolf werewolf : getOnlineWerewolves())
+					{
+						Player player = werewolf.getPlayer();
+						if (player == null)
+							continue;
+						SilverSword silverSword = new SilverSword();
+
+						if (silverSword.isHoldingItem(player, true) && silverSword.hasItem(player))
+							player.damage(config.getInt("silver-penalty"));
+					}
+        		}, 0L, config.getInt("intervals.werewolf-silver")));
 	}
 	
 	public void startCureChecker()
@@ -224,60 +222,55 @@ public class WerewolfManager
 		}
 		
 		//Continuously cure werewolves who haven't transformed in a long time
-		tasks.add(new BukkitRunnable()
-		{
-			@Override
-            public void run() 
-            {
-        		for (Werewolf werewolf : getAllWerewolves())
-        		{
-					if (werewolf == null)
+		tasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(
+				WerewolfPlugin.getInstance(),
+				() -> {
+					for (Werewolf werewolf : getAllWerewolves())
 					{
-						continue;
+						if (werewolf == null)
+							continue;
+
+						boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
+						if (alphaOnly && !isAlpha(werewolf.getUUID()))
+							continue;
+
+						long noCureTime = System.currentTimeMillis() - werewolf.getLastTransform();
+						long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
+						if (noCureTime >= cureDelay)
+						{
+							WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getUUID(), CureType.AUTO_CURE);
+							if (events != null)
+								events.callEvent(cureEvent);
+							if (!cureEvent.isCancelled())
+							{
+								messages.broadcastLocale("cure.auto-cure",
+										"{werewolf}", werewolf.getDisplayName());
+
+								cureWerewolf(werewolf);
+							}
+						}
 					}
-
-        			boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
-        			if (alphaOnly && !isAlpha(werewolf.getUUID()))
-					{
-						continue;
-					}
-
-        			long noCureTime = System.currentTimeMillis() - werewolf.getLastTransform();
-        			long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
-        			if (noCureTime >= cureDelay)
-        			{
-        				WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getPlayer(), CureType.AUTO_CURE);
-        				if (events != null)
-        					events.callEvent(cureEvent);
-        				if (!cureEvent.isCancelled())
-        				{
-            				messages.broadcastLocale("cure.auto-cure",
-            						"{werewolf}", werewolf.getDisplayName());
-
-            				cureWerewolf(werewolf);
-        				}
-        			}
-            	}
-            }
-        }.runTaskTimerAsynchronously(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.cure-check")));
+        		}, 0L, config.getInt("intervals.cure-check")));
 	}
 	
 	public void startScentChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		tasks.add(new BukkitRunnable()
-        {
-            public void run() 
-            {
-        		for (Werewolf werewolf : getOnlineWerewolves())
-        		{
-        			if (werewolf.inWolfForm() && werewolf.isTracking())
-        			{
-        				//Blind them and slow them down
-        				werewolf.showTrail();
-						if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.BLINDNESS))
+		tasks.add(Bukkit.getScheduler().runTaskTimer(
+			WerewolfPlugin.getInstance(),
+			() -> {
+				for (Werewolf werewolf : getOnlineWerewolves())
+				{
+					Player player = werewolf.getPlayer();
+					if (player == null)
+						continue;
+					if (werewolf.inWolfForm() && werewolf.isTracking())
+					{
+						//Blind them and slow them down
+						werewolf.showTrail();
+						if (!player.hasPotionEffect(PotionEffectType.BLINDNESS))
 						{
-							werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 720000, 0));
+							player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 720000, 0));
 						}
 
 						if (!werewolf.getPlayer().hasPotionEffect(ItemManager.getPotionEffectType("SLOWNESS")))
@@ -285,73 +278,67 @@ public class WerewolfManager
 							werewolf.getPlayer().addPotionEffect(new PotionEffect(ItemManager.getPotionEffectType("SLOWNESS"), 720000, 5));
 						}
 
-        				if (werewolf.canSniff())
+						if (werewolf.canSniff())
 						{
 							werewolf.sniff();
 						}
-        			}
-        		}
-            }
-        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-scent")));
+					}
+				}
+			}, 0L, config.getInt("intervals.werewolf-scent")));
 	}
 	
 	public void startVampirismChecker()
 	{
 		if (!dependency.hasPlugin("VampireRevamp"))
-		{
 			return;
-		}
 
 		//Only run if the Vampire plugin is running
-		tasks.add(new BukkitRunnable()
-		{
-			@Override
-			public void run()
+		tasks.add(Bukkit.getScheduler().runTaskTimer(WerewolfPlugin.getInstance(), () -> {
+			for (Werewolf werewolf : getOnlineWerewolves())
 			{
-				for (Werewolf werewolf : getOnlineWerewolves())
-				{
-					if (isVampire(werewolf.getPlayer()))
-					{
-						VPlayer vampire = VampireRevamp.getVPlayer(werewolf.getUUID());
-						if (vampire != null)
-						{
-							vampire.setVampire(false);
-						}
-					}
-				}
+				Player player = werewolf.getPlayer();
+				if (player == null)
+					continue;
+				VPlayer vPlayer = VampireRevamp.getInstance().getVPlayer(player);
+				if (vPlayer == null)
+					continue;
+				vPlayer.setVampire(false);
 			}
-		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.hybrid-check")));
+		}, 0L, config.getInt("intervals.hybrid-check")));
 	}
 	
 	public void endCycles()
 	{
 		//In case we need to stop the buff cycle for a reload
 		for (BukkitTask task : tasks)
-		{
 			task.cancel();
-		}
 	}
 	
-	public Werewolf getWerewolf(Player player)
+	public @Nullable Werewolf getWerewolf(@NotNull Player player)
 	{
 		return getWerewolf(player.getUniqueId());
 	}
-	public Werewolf getWerewolf(UUID playerId)
+
+	public @Nullable Werewolf getWerewolf(@NotNull UUID playerId)
 	{
 		return werewolves.get(playerId);
 	}
-	public Werewolf getOfflineWerewolf(UUID playerId)
+
+	public @Nullable Werewolf getOfflineWerewolf(@NotNull UUID playerId)
 	{
 		return werewolfData.read(playerId.toString());
 	}
+
 	public void getOfflineWerewolf(File file, Consumer<Werewolf> callback)
 	{
 		werewolfData.readAsync(file, callback);
 	}
+
 	public void getOfflineWerewolf(UUID playerId, Consumer<Werewolf> callback)
 	{
 		werewolfData.readAsync(playerId.toString(), callback);
 	}
+
 	public void loadWerewolf(Player player, Consumer<Werewolf> callback)
 	{
 		getOfflineWerewolf(player.getUniqueId(), callback);
@@ -361,15 +348,21 @@ public class WerewolfManager
 	{
 		return werewolves.values();
 	}
-	public void addWerewolf(Werewolf werewolf)
+
+	public void addWerewolf(@NotNull Werewolf werewolf)
 	{
 		werewolves.put(werewolf.getUUID(), werewolf);
 	}
-	public void removeWerewolf(Werewolf werewolf)
+
+	public void removeWerewolf(@NotNull Werewolf werewolf)
 	{
-		removeWerewolf(werewolf.getPlayer());
+		Player player = werewolf.getPlayer();
+		if (player == null)
+			return;
+		removeWerewolf(player);
 	}
-	public void removeWerewolf(Player player)
+
+	public void removeWerewolf(@NotNull Player player)
 	{
 		werewolves.remove(player.getUniqueId());
 	}
@@ -378,12 +371,10 @@ public class WerewolfManager
 	{
 		//Stores ever werewolf based on UUID
 		for (Werewolf werewolf : werewolves.values())
-		{
 			storeWerewolf(werewolf);
-		}
 	}
 	
-	public void storeWerewolf(Werewolf werewolf)
+	public void storeWerewolf(@NotNull Werewolf werewolf)
 	{
 		werewolfData.write(werewolf.getUUID().toString(), werewolf);
 	}
@@ -417,10 +408,8 @@ public class WerewolfManager
 
 	public void getOfflineWerewolves(Consumer<List<Werewolf>> callback)
 	{
-		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
-		{
-			callback.accept(getOfflineWerewolves());
-		});
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(),
+				() -> callback.accept(getOfflineWerewolves()));
 	}
 
 	public List<Werewolf> getAllWerewolves()
