@@ -1,16 +1,17 @@
 package us.rfsmassacre.Werewolf.Managers;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -240,17 +241,12 @@ public class ItemManager
 	{
 		String version = WerewolfPlugin.getDependencyManager().getServerVersion();
 		Material material = Material.getMaterial(name.toUpperCase());
+		int minor = Integer.parseInt(version.split("\\.")[1]);
 		
-		if (version.startsWith("1.13") || version.startsWith("1.14")
-		|| version.startsWith("1.15") || version.startsWith("1.16")
-		|| version.startsWith("1.17") || version.startsWith("1.18")
-		|| version.startsWith("1.19") || version.startsWith("1.20")
-		|| version.startsWith("1.21"))
+		if (minor >= 13)
 		{
 			if (material == null)
-			{
 				material = Material.getMaterial(name.toUpperCase(), true);
-			}
 		}
 		
 		return material;
