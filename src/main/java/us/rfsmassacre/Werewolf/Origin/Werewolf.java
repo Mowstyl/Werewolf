@@ -25,7 +25,7 @@ public class Werewolf implements Comparable<Werewolf>
 {
 	private ConfigManager config;
 	private EventManager events;
-	
+
 	private static final int MINUTE = 60000; //Number of milliseconds in a min
 	private static final int SECOND = 1000; //Number of milliseconds in a sec
 
@@ -33,18 +33,18 @@ public class Werewolf implements Comparable<Werewolf>
 	private String displayName; //Prefix and displayname for offline use
 	private ClanType type; //Clan werewolf belongs to
 	private int level; //Werewolf level
-	
+
 	private boolean intent; //Intent to infect others
 	private boolean tracking; //Wether Werewolf is tracking a scent
 	private UUID targetId; //Target being tracked by this werewolf
 	private boolean wolfForm; //Wether transformed or not
 	private List<Wolf> wolfPack; //Current wolves following this werewolf
-	
+
 	private long lastTransform; //Last time transformed
 	private long lastHowl; //Last time howled
 	private long lastGrowl; //Last time growled
 	private long lastSniff; //Last time sniffed
-	
+
 	public Werewolf(UUID playerId)
 	{
 		this.config = WerewolfPlugin.getConfigManager();
@@ -562,7 +562,7 @@ public class Werewolf implements Comparable<Werewolf>
 				Location nextLoc = iterator.next().getLocation();
 				for (int times = 0; times < amount; times++)
 				{
-				    player.spawnParticle(Particle.valueOf(particleName), nextLoc, 0, color.getRed(), color.getGreen(), color.getBlue());
+					player.spawnParticle(Particle.valueOf(particleName), nextLoc, 0, color.getRed(), color.getGreen(), color.getBlue());
 				}
 			}
 			return true;
@@ -585,7 +585,7 @@ public class Werewolf implements Comparable<Werewolf>
 			setTracking(true);
 			return true;
 		}
-		
+
 		return false;
 	}
 	public boolean stopTracking()
@@ -595,12 +595,12 @@ public class Werewolf implements Comparable<Werewolf>
 		{
 			setTracking(false);
 
-            player.removePotionEffect(PotionEffectType.BLINDNESS);
-            player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
+			player.removePotionEffect(PotionEffectType.BLINDNESS);
+			player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
 
 			return true;
 		}
-		
+
 		return false;
 	}
 }

@@ -61,14 +61,14 @@ public abstract class WerewolfPotion extends WerewolfItem
 	 */
 	public void setPotionColor(Color color)
 	{
-		PotionMeta meta = (PotionMeta)getItemStack().getItemMeta();
+		PotionMeta meta = (PotionMeta) getItemStack().getItemMeta();
 		meta.setColor(color);
 		//meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		this.item.setItemMeta(meta);
 	}
 	public Color getPotionColor()
 	{
-		return ((PotionMeta)getItemStack().getItemMeta()).getColor();
+		return ((PotionMeta) getItemStack().getItemMeta()).getColor();
 	}
 	
 	/*
@@ -85,6 +85,7 @@ public abstract class WerewolfPotion extends WerewolfItem
 	{
 		return splash;
 	}
+
 	private void setSplash(boolean splash) 
 	{
 		this.splash = splash;
