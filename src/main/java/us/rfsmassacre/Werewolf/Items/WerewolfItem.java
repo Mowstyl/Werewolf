@@ -3,6 +3,7 @@ package us.rfsmassacre.Werewolf.Items;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import us.rfsmassacre.HeavenLib.Items.HeavenItem;
 import us.rfsmassacre.Werewolf.Data.ItemDataManager;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
@@ -43,7 +44,7 @@ public abstract class WerewolfItem extends HeavenItem
     }
 
     @SuppressWarnings("deprecation")
-    public boolean isHoldingItem(Player hunter, boolean bothHands)
+    public boolean isHoldingItem(@NonNull Player hunter, boolean bothHands)
     {
         try
         {
