@@ -28,7 +28,7 @@ maven.pom {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
         vendor = JvmVendorSpec.ORACLE
     }
 }
@@ -50,7 +50,8 @@ repositories {
             includeGroup("com.sk89q.worldguard")
         }
     }
-    maven("https://repo.codemc.io/repository/maven-public/") {
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-releases/")
         content {
             includeGroup("net.skinsrestorer")
             includeGroup("de.tr7zw")
