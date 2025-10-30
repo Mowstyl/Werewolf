@@ -39,13 +39,13 @@ public abstract class ResourceManager extends Manager
 				InputStreamReader reader = new InputStreamReader(stream);
 				this.defaultFile = YamlConfiguration.loadConfiguration(reader);
 			}
-
+			
 			if (!newFile.exists())
 			{
 				newFile.createNewFile();
 				this.defaultFile.save(newFile);
 			}
-			
+
 			this.file = YamlConfiguration.loadConfiguration(newFile);
 		}
 		catch (IOException exception)

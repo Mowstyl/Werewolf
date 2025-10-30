@@ -11,7 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 
-public class WerewolfAPI 
+public class WerewolfAPI
 {
 	/*
 	 * Online Check for Race
@@ -32,7 +32,7 @@ public class WerewolfAPI
 	{
 		return WerewolfPlugin.getWerewolfManager().isAlpha(player);
 	}
-	
+
 	/*
 	 * Offline Check for Werewolf
 	 */

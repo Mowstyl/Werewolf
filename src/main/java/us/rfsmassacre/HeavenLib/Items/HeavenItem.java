@@ -9,18 +9,16 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class HeavenItem
 {
     protected ItemStack item;
 
-    protected Material material;
+    protected Material type;
     @Getter
     protected String name;
     @Getter
@@ -32,14 +30,16 @@ public abstract class HeavenItem
     @Getter
     protected Recipe recipe;
 
+
     public HeavenItem(Material material, int amount, String name,
-            String displayName, List<String> lore)
+                      String displayName, List<String> lore)
     {
         this.item = new ItemStack(material, amount);
 
         this.name = name;
         this.displayName = displayName;
-        this.material = material;
+        this.type = material;
+
         this.key = new NamespacedKey(WerewolfPlugin.getInstance(), name);
 
         this.setDisplayName(displayName);
@@ -125,7 +125,6 @@ public abstract class HeavenItem
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
-
     public List<String> getItemLore()
     {
         ItemMeta meta = item.getItemMeta();
@@ -144,7 +143,6 @@ public abstract class HeavenItem
         {
             return;
         }
-
         meta.addItemFlags(flags);
         item.setItemMeta(meta);
     }
@@ -152,11 +150,6 @@ public abstract class HeavenItem
     public ItemStack getItemStack()
     {
         return item;
-    }
-
-    public Material getType()
-    {
-        return material;
     }
 
     /*

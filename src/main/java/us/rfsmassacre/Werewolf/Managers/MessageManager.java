@@ -67,26 +67,28 @@ public class MessageManager
 		
 		return message;
 	}
-	public void sendMessage(CommandSender sender, String message, String...replacers)
+
+	public void sendMessage(CommandSender sender, String message, String... replacers)
 	{
 		sender.sendMessage(ChatManager.format(replaceHolders(message, replacers)));
 	}
 	
-	public void sendWolfLocale(CommandSender sender, String key, String...replacers)
+	public void sendWolfLocale(CommandSender sender, String key, String... replacers)
 	{
 		sendMessage(sender, locale.getMessage("prefix.werewolf") + locale.getMessage(key), replacers);
 	}
+
 	public void sendHunterLocale(CommandSender sender, String key, String... replacers)
 	{
 		sendMessage(sender, locale.getMessage("prefix.hunter") + locale.getMessage(key), replacers);
 	}
 	
-	public void broadcastLocale(String key, String...replacers)
+	public void broadcastLocale(String key, String... replacers)
 	{
 		Bukkit.broadcastMessage(ChatManager.format(replaceHolders(locale.getMessage("prefix.werewolf") + locale.getMessage(key), replacers)));
 	}
 	
-	public void sendWolfAction(Player player, String key, String...replacers)
+	public void sendWolfAction(Player player, String key, String... replacers)
 	{
 		String message = replaceHolders(locale.getMessage("prefix.werewolf") + locale.getMessage(key), replacers);
 		
@@ -105,22 +107,27 @@ public class MessageManager
 	{
 		return mainText.getText();
 	}
+
 	public String getAdminText()
 	{
 		return adminText.getText();
 	}
+
 	public String getHelpText1()
 	{
 		return helpText1.getText();
 	}
+
 	public String getHelpText2()
 	{
 		return helpText2.getText();
 	}
+
 	public String getAdminHelpText1()
 	{
 		return helpAdmin1.getText();
 	}
+
 	public String getAdminHelpText2()
 	{
 		return helpAdmin2.getText();

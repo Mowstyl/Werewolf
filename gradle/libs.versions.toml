@@ -3,19 +3,20 @@ shadowPlugin = { id = "com.gradleup.shadow", version.ref = "shadowGradlePlugin" 
 generatePOMPlugin = { id = "ru.vyarus.java-lib", version.ref = "generatePOMGradlePlugin" }
 
 [versions]
-shadowGradlePlugin = "8.3.0"
+shadowGradlePlugin = "9.2.2"
 generatePOMGradlePlugin = "3.0.0"
 
-bukkitAPI = "1.21.8-R0.1-SNAPSHOT"
+bukkitAPI = "1.21.10-R0.1-SNAPSHOT"
 vampireRevamp = "1.0.2-SNAPSHOT"
 vaultAPI = "1.7.1"
 griefPrevention = "16.18"
 worldEdit = "7.2.0-SNAPSHOT"
 worldGuard = "7.0.0"
-itemNBTAPI = "2.15.1"
+itemNBTAPI = "2.15.3"
 pvpManager = "3.12"
-skinsRestorerAPI = "15.7.9"
+skinsRestorerAPI = "15.8.2"
 annotations = "24.1.0"
+lombok = "1.18.42"
 
 [libraries]
 spigotmc-spigotapi = { group = "org.spigotmc", name = "spigot-api", version.ref = "bukkitAPI" }
@@ -30,3 +31,4 @@ tr7zw-nbtapi = { group = "de.tr7zw", name = "item-nbt-api", version.ref = "itemN
 nochance-pvpmanager = { group = "me.NoChance.PvPManager", name = "PvPManager", version.ref = "pvpManager" }
 skinsrestorer-api = { group = "net.skinsrestorer", name = "skinsrestorer-api", version.ref = "skinsRestorerAPI" }
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+lombok-annotations = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }

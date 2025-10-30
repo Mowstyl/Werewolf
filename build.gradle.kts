@@ -8,17 +8,8 @@ plugins {
 }
 
 
-val getGitHash: String by lazy {
-    val stdout = ByteArrayOutputStream()
-    rootProject.exec {
-        commandLine("git", "rev-parse", "--short", "HEAD")
-        standardOutput = stdout
-    }
-    stdout.toString().trim()
-}
-
 group = "us.rfsmassacre"
-version = "1.7.2-SNAPSHOT"  // .replace("SNAPSHOT", getGitHash)
+version = "1.7.5-SNAPSHOT"  // .replace("SNAPSHOT", getGitHash)
 description = "WerewolfPlugin"
 
 ext.set("projectName", gradle.extra["projectName"].toString())
@@ -102,6 +93,12 @@ dependencies {
         isTransitive = false
     }
     compileOnly(libs.jetbrains.annotations) {
+        isTransitive = false
+    }
+    compileOnly(libs.lombok.annotations) {
+        isTransitive = false
+    }
+    annotationProcessor(libs.lombok.annotations) {
         isTransitive = false
     }
     implementation(libs.tr7zw.nbtapi) {
