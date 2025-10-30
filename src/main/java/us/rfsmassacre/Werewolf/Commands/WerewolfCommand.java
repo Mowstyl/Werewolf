@@ -116,16 +116,14 @@ public class WerewolfCommand extends SpigotCommand
 
 					switch (daysLeft)
 					{
-						case 1:
-							menu = menu.replace("{days}", config.getString("menu.days.tomorrow"));
-							break;
-						case 8:
-							menu = menu.replace("{days}", config.getString("menu.days.tonight"));
-							break;
-						default:
-							menu = menu.replace("{days}", config.getString("menu.days.later"));
-							menu = menu.replace("{time}", Integer.toString(daysLeft));
-					}
+                        case 1 -> menu = menu.replace("{days}", config.getString("menu.days.tomorrow"));
+						case 8 -> menu = menu.replace("{days}", config.getString("menu.days.tonight"));
+                        default ->
+                        {
+                            menu = menu.replace("{days}", config.getString("menu.days.later"));
+                            menu = menu.replace("{time}", Integer.toString(daysLeft));
+                        }
+                    }
 				}
 			}
 			else
@@ -203,12 +201,11 @@ public class WerewolfCommand extends SpigotCommand
 		@Override
 		protected List<String> onTabComplete(CommandSender sender, String[] args)
 		{
-			if (!(sender instanceof Player))
+			if (!(sender instanceof Player player))
 			{
 				return Collections.emptyList();
 			}
 
-			Player player = (Player) sender;
 			List<String> suggestions = new ArrayList<>();
 			if (args.length == 2)
 			{

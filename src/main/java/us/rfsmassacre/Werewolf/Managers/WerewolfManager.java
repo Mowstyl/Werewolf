@@ -95,9 +95,11 @@ public class WerewolfManager
 	public void startFormChecker()
 	{
 		//Continuously give back the buffs in they were missing
-		tasks.add(Bukkit.getScheduler().runTaskTimer(
-			WerewolfPlugin.getInstance(),
-			() -> {
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
 				for (Werewolf werewolf : getOnlineWerewolves())
 				{
 					Player player = werewolf.getPlayer();
@@ -176,42 +178,49 @@ public class WerewolfManager
 						}
 					}
 				}
-			}, 0L, config.getInt("intervals.werewolf-buffs")));
+			}
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-buffs")));
 	}
 	
 	public void startArmorChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		tasks.add(Bukkit.getScheduler().runTaskTimer(
-				WerewolfPlugin.getInstance(),
-				() -> {
-					for (Werewolf werewolf : getOnlineWerewolves())
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				for (Werewolf werewolf : getOnlineWerewolves())
+				{
+					if (werewolf.inWolfForm())
 					{
-						if (werewolf.inWolfForm())
-						{
-							werewolf.dropArmor();
-						}
+						werewolf.dropArmor();
 					}
-				}, 0L, config.getInt("intervals.werewolf-drops")));
+				}
+			}
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-drops")));
 	}
 	
 	public void startWeaponChecker()
 	{
 		//Continuously cause werewolves to get hurt if touching silver
-		tasks.add(Bukkit.getScheduler().runTaskTimer(
-				WerewolfPlugin.getInstance(),
-				() -> {
-					for (Werewolf werewolf : getOnlineWerewolves())
-					{
-						Player player = werewolf.getPlayer();
-						if (player == null)
-							continue;
-						SilverSword silverSword = new SilverSword();
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				for (Werewolf werewolf : getOnlineWerewolves())
+				{
+					Player player = werewolf.getPlayer();
+					if (player == null)
+						continue;
+					SilverSword silverSword = new SilverSword();
 
-						if (silverSword.isHoldingItem(player, true) && silverSword.hasItem(player))
-							player.damage(config.getInt("silver-penalty"));
-					}
-        		}, 0L, config.getInt("intervals.werewolf-silver")));
+					if (silverSword.isHoldingItem(player, true) && silverSword.hasItem(player))
+						player.damage(config.getInt("silver-penalty"));
+				}
+			}
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-silver")));
 	}
 	
 	public void startCureChecker()
@@ -222,43 +231,48 @@ public class WerewolfManager
 		}
 		
 		//Continuously cure werewolves who haven't transformed in a long time
-		tasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(
-				WerewolfPlugin.getInstance(),
-				() -> {
-					for (Werewolf werewolf : getAllWerewolves())
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				for (Werewolf werewolf : getAllWerewolves())
+				{
+					if (werewolf == null)
+						continue;
+
+					boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
+					if (alphaOnly && !isAlpha(werewolf.getUUID()))
+						continue;
+
+					long noCureTime = System.currentTimeMillis() - werewolf.getLastTransform();
+					long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
+					if (noCureTime >= cureDelay)
 					{
-						if (werewolf == null)
-							continue;
-
-						boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
-						if (alphaOnly && !isAlpha(werewolf.getUUID()))
-							continue;
-
-						long noCureTime = System.currentTimeMillis() - werewolf.getLastTransform();
-						long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
-						if (noCureTime >= cureDelay)
+						WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getUUID(), CureType.AUTO_CURE);
+						if (events != null)
+							events.callEvent(cureEvent);
+						if (!cureEvent.isCancelled())
 						{
-							WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getUUID(), CureType.AUTO_CURE);
-							if (events != null)
-								events.callEvent(cureEvent);
-							if (!cureEvent.isCancelled())
-							{
-								messages.broadcastLocale("cure.auto-cure",
-										"{werewolf}", werewolf.getDisplayName());
+							messages.broadcastLocale("cure.auto-cure",
+									"{werewolf}", werewolf.getDisplayName());
 
-								cureWerewolf(werewolf);
-							}
+							cureWerewolf(werewolf);
 						}
 					}
-        		}, 0L, config.getInt("intervals.cure-check")));
+				}
+			}
+		}.runTaskTimerAsynchronously(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.cure-check")));
 	}
 	
 	public void startScentChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		tasks.add(Bukkit.getScheduler().runTaskTimer(
-			WerewolfPlugin.getInstance(),
-			() -> {
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
 				for (Werewolf werewolf : getOnlineWerewolves())
 				{
 					Player player = werewolf.getPlayer();
@@ -284,34 +298,42 @@ public class WerewolfManager
 						}
 					}
 				}
-			}, 0L, config.getInt("intervals.werewolf-scent")));
+			}
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-scent")));
 	}
 	
 	public void startVampirismChecker()
 	{
 		if (!dependency.hasPlugin("VampireRevamp"))
+		{
 			return;
+		}
 
 		//Only run if the Vampire plugin is running
-		tasks.add(Bukkit.getScheduler().runTaskTimer(WerewolfPlugin.getInstance(), () -> {
-			for (Werewolf werewolf : getOnlineWerewolves())
-			{
-				Player player = werewolf.getPlayer();
-				if (player == null)
-					continue;
-				VPlayer vPlayer = VampireRevamp.getInstance().getVPlayer(player);
-				if (vPlayer == null)
-					continue;
-				vPlayer.setVampire(false);
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run() {
+				for (Werewolf werewolf : getOnlineWerewolves()) {
+					Player player = werewolf.getPlayer();
+					if (player == null)
+						continue;
+					VPlayer vPlayer = VampireRevamp.getInstance().getVPlayer(player);
+					if (vPlayer == null)
+						continue;
+					vPlayer.setVampire(false);
+				}
 			}
-		}, 0L, config.getInt("intervals.hybrid-check")));
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.hybrid-check")));
 	}
 	
 	public void endCycles()
 	{
 		//In case we need to stop the buff cycle for a reload
 		for (BukkitTask task : tasks)
+		{
 			task.cancel();
+		}
 	}
 	
 	public @Nullable Werewolf getWerewolf(@NotNull Player player)

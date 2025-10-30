@@ -21,9 +21,9 @@ import us.rfsmassacre.Werewolf.Managers.*;
 
 public class WerewolfPlugin extends JavaPlugin
 {
-	//Get the instance needed across this plugin
-	@Getter
-	private static WerewolfPlugin instance;
+    //Get the instance needed across this plugin
+    @Getter
+    private static WerewolfPlugin instance;
 	
 	private ChatManager chat;
 	private ConfigManager config;
@@ -153,7 +153,6 @@ public class WerewolfPlugin extends JavaPlugin
 		clans.storeClans();
 		werewolves.storeWerewolves();
 	}
-
 	/*
 	 * User Group Toggle
 	 */

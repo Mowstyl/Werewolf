@@ -4,7 +4,6 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.potion.PotionEffectType;
 
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 
@@ -14,7 +13,7 @@ public class WolfsbanePotion extends WerewolfPotion
 	public WolfsbanePotion() 
 	{
 		super("WOLFSBANE_POTION", true, Color.RED,
-				PotionEffectType.INSTANT_HEALTH);
+				ItemManager.getPotionEffectType("INSTANT_HEALTH"));
 	}
 	
 	@Override

@@ -562,7 +562,7 @@ public class Werewolf implements Comparable<Werewolf>
 				Location nextLoc = iterator.next().getLocation();
 				for (int times = 0; times < amount; times++)
 				{
-					player.spawnParticle(Particle.valueOf(particleName), nextLoc, 0, color.getRed(), color.getGreen(), color.getBlue());
+				    player.spawnParticle(Particle.valueOf(particleName), nextLoc, 0, color.getRed(), color.getGreen(), color.getBlue());
 				}
 			}
 			return true;
@@ -595,8 +595,8 @@ public class Werewolf implements Comparable<Werewolf>
 		{
 			setTracking(false);
 
-			player.removePotionEffect(PotionEffectType.BLINDNESS);
-			player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+            player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
 
 			return true;
 		}

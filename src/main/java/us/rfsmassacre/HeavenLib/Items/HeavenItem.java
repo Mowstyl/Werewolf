@@ -18,6 +18,7 @@ public abstract class HeavenItem
 {
     protected ItemStack item;
 
+    @Getter
     protected Material type;
     @Getter
     protected String name;
@@ -32,14 +33,13 @@ public abstract class HeavenItem
 
 
     public HeavenItem(Material material, int amount, String name,
-                      String displayName, List<String> lore)
+            String displayName, List<String> lore)
     {
         this.item = new ItemStack(material, amount);
 
         this.name = name;
         this.displayName = displayName;
         this.type = material;
-
         this.key = new NamespacedKey(WerewolfPlugin.getInstance(), name);
 
         this.setDisplayName(displayName);
@@ -143,6 +143,7 @@ public abstract class HeavenItem
         {
             return;
         }
+
         meta.addItemFlags(flags);
         item.setItemMeta(meta);
     }
