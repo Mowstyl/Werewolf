@@ -19,7 +19,7 @@ maven.pom {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
         vendor = JvmVendorSpec.ORACLE
     }
 }
@@ -30,12 +30,17 @@ repositories {
             includeGroup("com.gradleup")
         }
     }
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
         content {
-            includeGroup("org.spigotmc")
+            includeGroup("io.papermc")
+            includeGroup("io.papermc.paper")
+            includeGroup("com.mojang")
+            includeGroup("net.md-5")
         }
     }
-    maven("https://maven.enginehub.org/repo/") {
+    maven {
+        url = uri("https://maven.enginehub.org/repo/")
         content {
             includeGroup("com.sk89q.worldedit")
             includeGroup("com.sk89q.worldguard")
@@ -49,12 +54,14 @@ repositories {
             includeGroup("me.NoChance.PvPManager")
         }
     }
-    maven("https://nexus.clanjhoo.com/repository/maven-public/") {
+    maven {
+        url = uri("https://nexus.clanjhoo.com/repository/maven-public/")
         content {
             includeGroup("com.clanjhoo")
         }
     }
-    maven("https://jitpack.io") {
+    maven {
+        url = uri("https://jitpack.io")
         content {
             includeGroupByRegex("com\\.github\\..*")
         }
@@ -64,7 +71,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.spigotmc.spigotapi)
+    compileOnly(libs.papermc.paperapi)
     compileOnly(libs.sk89q.worldedit.core) {
         isTransitive = false
     }
@@ -101,9 +108,6 @@ dependencies {
     annotationProcessor(libs.lombok.annotations) {
         isTransitive = false
     }
-    implementation(libs.tr7zw.nbtapi) {
-        isTransitive = false
-    }
 }
 
 tasks.withType<JavaCompile>() {
@@ -119,11 +123,6 @@ tasks {
         filesMatching("**/plugin.yml") {
             expand( project.properties )
         }
-    }
-
-    shadowJar {
-        relocate("de.tr7zw.changeme.nbtapi", "de.tr7zw.${rootProject.name.lowercase()}.nbtapi")
-        exclude("META-INF/maven/de.tr7zw/**")
     }
 }
 

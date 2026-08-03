@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -80,7 +79,7 @@ public class WerewolfListener implements Listener
 	 * Werewolves naturally reduce incoming damage.
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-	public void onWerewolfDamage(EntityDamageByEntityEvent event)
+	public void onWerewolfDamage(EntityDamageEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
 		if (!(event.getEntity() instanceof Player player))
@@ -100,10 +99,36 @@ public class WerewolfListener implements Listener
 			return;
 
 		//Mitigate combat damage if in wolf form with no armor
+		double factor;
 		if (werewolves.isAlpha(player))
-			event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".alpha.defense"));
+			factor = config.getDouble("werewolf-stats." + clan + ".alpha.defense");
 		else
-			event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".werewolf.defense"));
+			factor = config.getDouble("werewolf-stats." + clan + ".werewolf.defense");
+
+		switch (event.getCause()) {
+			case KILL:
+			case SUICIDE:
+			case VOID:
+			case WORLD_BORDER:
+			case SONIC_BOOM:
+				break;
+			case PROJECTILE:
+			case BLOCK_EXPLOSION:
+			case ENTITY_EXPLOSION:
+			case FIRE:
+			case FIRE_TICK:
+			case CAMPFIRE:
+			case LAVA:
+			case HOT_FLOOR:
+			case FALL:
+			case FLY_INTO_WALL:
+				factor *= 0.2;  // Innate proj/blast/fall/fire prot enchantment
+				break;
+			default:
+				factor *= 0.36;  // Innate general prot enchantment
+		}
+
+		event.setDamage(event.getDamage() * factor);
 	}
 	
 	/*
@@ -158,7 +183,7 @@ public class WerewolfListener implements Listener
 				factor = config.getDouble("werewolf-stats." + clan + ".werewolf.item-factor");
 			}
 		}
-		event.setDamage(Math.max(factor * (event.getDamage() + offset), Math.min(event.getDamage(), 1D)));
+		event.setDamage(Math.max(factor * (event.getFinalDamage() + offset), Math.min(event.getFinalDamage(), 1D)));
 	}
 	
 	/*

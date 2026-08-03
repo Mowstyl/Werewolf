@@ -4,29 +4,18 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.potion.PotionEffectType;
 
-@SuppressWarnings("deprecation")
 public class InfectionPotion extends WerewolfPotion
 {
 	public InfectionPotion() 
 	{
-		super("INFECTION_POTION", false, Color.ORANGE, PotionEffectType.FIRE_RESISTANCE);
+		super("INFECTION_POTION", false, Color.ORANGE);
 	}
 
 	@Override
 	protected Recipe createRecipe() 
 	{
-		ShapelessRecipe recipe;
-		
-		try
-		{
-			recipe = new ShapelessRecipe(key, getItemStack());
-		}
-		catch (NoSuchMethodError exception)
-		{
-			recipe = new ShapelessRecipe(getItemStack());
-		}
+		ShapelessRecipe recipe = new ShapelessRecipe(key, getItemStack());
 		
 		recipe.addIngredient(Material.SLIME_BALL);
 		recipe.addIngredient(Material.LEATHER);

@@ -192,7 +192,7 @@ public class WerewolfManager
 			{
 				for (Werewolf werewolf : getOnlineWerewolves())
 				{
-					if (werewolf.inWolfForm())
+					if (werewolf.inWolfForm() && werewolf.getLevel() < config.getConfigurationSection("maturity").getInt("no-drop"))
 					{
 						werewolf.dropArmor();
 					}
@@ -287,9 +287,9 @@ public class WerewolfManager
 							player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 720000, 0));
 						}
 
-						if (!werewolf.getPlayer().hasPotionEffect(ItemManager.getPotionEffectType("SLOWNESS")))
+						if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.SLOWNESS))
 						{
-							werewolf.getPlayer().addPotionEffect(new PotionEffect(ItemManager.getPotionEffectType("SLOWNESS"), 720000, 5));
+							werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 720000, 5));
 						}
 
 						if (werewolf.canSniff())

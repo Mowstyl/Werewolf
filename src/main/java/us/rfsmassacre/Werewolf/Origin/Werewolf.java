@@ -239,15 +239,17 @@ public class Werewolf implements Comparable<Werewolf>
 				 * the transformation sequence easy.
 				 */
 				howl();
-				dropArmor();
-				dropItems();
+				if (level < config.getConfigurationSection("maturity").getInt("no-drop")) {
+					dropArmor();
+					dropItems();
+				}
 
 				for (PotionEffect effect : player.getActivePotionEffects())
 				{
 					player.removePotionEffect(effect.getType());
 				}
 
-				player.addPotionEffect(new PotionEffect(ItemManager.getPotionEffectType("NAUSEA"), 100, 1));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
 				player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 2, 0)), Effect.SMOKE, 100);
@@ -596,7 +598,7 @@ public class Werewolf implements Comparable<Werewolf>
 			setTracking(false);
 
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-            player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
+            player.removePotionEffect(PotionEffectType.SLOWNESS);
 
 			return true;
 		}

@@ -282,7 +282,7 @@ public class WerewolfHuntingListener implements Listener
 		{
 			Player victim = (Player)event.getEntity();
 			Player attacker = (Player)event.getDamager();
-			Material goldSword = ItemManager.getCorrectMaterial("GOLD_SWORD");
+			Material goldSword = Material.GOLDEN_SWORD;
 			
 			//If werewolf is hit by gold sword in wolf form, undo the defense buff
 			if (werewolves.isWerewolf(victim))

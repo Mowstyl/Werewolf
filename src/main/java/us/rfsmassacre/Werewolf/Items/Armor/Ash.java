@@ -1,5 +1,6 @@
 package us.rfsmassacre.Werewolf.Items.Armor;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
@@ -9,7 +10,7 @@ public class Ash extends WerewolfItem
 {
 	public Ash() 
 	{
-		super(ItemManager.getCorrectMaterial("SULPHUR"), "ASH"); //Enum was changed in 1.13
+		super(Material.GUNPOWDER, "ASH"); //Enum was changed in 1.13
 	}
 
 	@Override
